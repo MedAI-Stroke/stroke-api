@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
-from app.models.face_model import FaceModel
-from app.models.arm_model import ArmModel
-from app.models.speech_model import SpeechModel
+from app.models import FaceModel, ArmModel, SpeechModel
+
 
 api_bp = Blueprint('api', __name__)
 
@@ -11,24 +10,49 @@ speech_model = SpeechModel()
 
 @api_bp.route('/face', methods=['POST'])
 def face_analysis():
-    # 여기에 face 모델 로직을 구현합니다
-    data = request.json
-    result = face_model.predict(data)
-    return jsonify({"message": "Face analysis completed", "result":result}), 200
+    if 'image' not in request.files:
+        return jsonify({'error':"No image file"}), 400
+    
+    image_file = request.files['image']
+
+    if image_file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if image_file:
+        result = face_model.predict(image_file)
+        return jsonify({"message": "Face analysis completed", "result":result}), 200
 
 @api_bp.route('/arm', methods=['POST'])
 def arm_analysis():
-    # 여기에 arm 모델 로직을 구현합니다
-    data = request.json
-    result = arm_model.predict(data)
-    return jsonify({"message": "Arm analysis completed", "result": result}), 200
+    if 'csv' not in request.files:
+        return jsonify({'error': 'No CSV files'}), 400
+    
+    csv_file = request.files['csv']
+
+    if csv_file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    if csv_file:
+        result = arm_model.predict(csv_file)
+        return jsonify({"message": "Arm analysis completed", "result": result}), 200
 
 @api_bp.route('/speech', methods=['POST'])
 def speech_analysis():
-    # 여기에 speech 모델 로직을 구현합니다
-    data = request.json
-    result = speech_model.predict(data)
-    return jsonify({"message": "Speech analysis completed", "result": result}), 200
+    if 'audio' not in request.files:
+        return jsonify({'error': "No Audio file"}), 400
+    audio_file = request.files['audio']
+
+    if audio_file.filename=='':
+        return jsonify({'error':'No selected file'}), 400   
+    
+    if audio_file:
+        # # 임시 저장시
+        # temp_path = save_temp_file(audio_file)
+        # result = speech_model.predict(temp_path)
+
+        # 모델 직접 전달시
+        result = speech_model.predict(audio_file)
+        return jsonify({"message": "Speech analysis completed", "result": result}), 200
 
 
 

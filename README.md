@@ -2,10 +2,6 @@
 
 MedAI-Stroke API는 뇌졸중 진단을 위한 얼굴 비대칭, 팔 움직임, 언어 장애를 분석하는 API입니다.
 
-## 기본 URL
-
-`http://3.107.170.232:5000/`
-
 ## 엔드포인트
 
 ### 1. 얼굴 비대칭 탐지
@@ -34,7 +30,7 @@ MedAI-Stroke API는 뇌졸중 진단을 위한 얼굴 비대칭, 팔 움직임, 
 - 요청 본문:
   ```json
   {
-    "sensor": "센서 데이터"
+    "csv": "센서 데이터"
   }
   ```
 - 응답 예시:
@@ -63,7 +59,9 @@ MedAI-Stroke API는 뇌졸중 진단을 위한 얼굴 비대칭, 팔 움직임, 
   {
   "message": "Speech analysis completed",
   "result": {
-    "stroke": 1
+    "stroke": 1,
+    "score":0.885
+    
   }
     }
     ```
@@ -84,7 +82,7 @@ interface MedAIStrokeApi {
 
 // Retrofit 인스턴스 생성
 val retrofit = Retrofit.Builder()
-    .baseUrl("http://3.107.170.232:5000/")
+    .baseUrl("http://13.54.38.182:8080/")
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
