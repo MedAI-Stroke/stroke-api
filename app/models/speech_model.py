@@ -1,8 +1,16 @@
+import os
+from tensorflow import keras
+from app.preprocess.audio_processing import preprocess_audio
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 class SpeechModel:
     def __init__(self):
-        # 모델 초기화 로직
-        pass
-
-    def predict(self, data):
-        # 실제 예측 로직을 여기에 구현
-        return {"stroke": 1}  # 임시 결과
+        self.model = keras.models.load_model(os.path.join(base_dir, 'src', 'speech_model.keras'))
+    
+    def predict(self, audio_file):
+        audio = preprocess_audio(audio_file)
+        pred = self.model.predict(audio)
+        pred_cls = (pred > 0.5).astype(int)
+        return {"stroke": pred_cls[0][0],
+                "score":pred[0][0]} 
