@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import librosa
-from sklearn.preprocessing import StandardScaler
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,7 +36,7 @@ def preprocess_audio(audio_file):
 
 
     # Standardization
-    mean = np.load(os.path.join(base_dir, 'paramaters', 'audio_mean_train.npy'), allow_pickle=True)
+    mean = np.load(os.path.join(base_dir, 'parameters', 'audio_mean_train.npy'), allow_pickle=True)
     std = np.load(os.path.join(base_dir, 'parameters', 'audio_std_train.npy'), allow_pickle=True)
     mfcc = (fixed_mfcc-mean) / (std + 1e-8)
 

@@ -1,6 +1,12 @@
 import os
+import tensorflow as tf
 from tensorflow import keras
-from app.preprocessing.audio_processing import preprocess_audio
+from app.preprocessing import preprocess_audio
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+tf.config.set_visible_devices([], 'GPU')
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
