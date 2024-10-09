@@ -30,7 +30,7 @@ def process_csv(csv_file):
     df = pd.DataFrame(data_feature)
 
     # 기존 표준화 데이터셋 활용하여 데이터 정규화
-    mean_std_df = pd.read_csv(os.path.join(base_dir, 'src', 'csv_mean_std_df.csv'), index_col='Unnamed: 0')
+    mean_std_df = pd.read_csv(os.path.join(base_dir, 'parameters', 'csv_mean_std_df.csv'), index_col='Unnamed: 0')
     mean_std_df = mean_std_df.to_dict()
     df = features.standardize_new_data(df, mean_std_df)
 
@@ -41,7 +41,7 @@ def process_csv(csv_file):
     df = df[variables]
 
     # 주성분분석으로 12개 feature로 축소하기
-    components_df = pd.read_csv(os.path.join(base_dir, 'src', 'csv_PCA_result_11.csv'), index_col=0)
+    components_df = pd.read_csv(os.path.join(base_dir, 'parameters', 'csv_PCA_result_11.csv'), index_col=0)
     pca_loadings = components_df.values
     pca_transformed = df.values @ pca_loadings.T
     pca_columns = [f'pca_var_{i}' for i in range(1, 12)]
