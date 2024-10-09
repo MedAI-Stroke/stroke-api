@@ -1,6 +1,6 @@
 import os
 import pickle
-from app.preprocessing import csv_processing
+from app.preprocessing import process_csv
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -10,6 +10,14 @@ class ArmModel:
         with open(model_path, 'rb') as file:
             self.model = pickle.load(file)
         
-    def predict(self, data):
-        # 실제 예측 로직을 여기에 구현
-        return {"stroke": 1}  # 임시 결과
+    def predict(self, csv_file):
+        df = process_csv(csv_file)
+        pred_cls = self.model.predict(df)
+        proba = self.model.predict_proba(df)[:,1][0]
+        print(proba)
+        print(pred_cls)
+
+        return {"stroke": pred_cls,
+                "score":proba} 
+
+
