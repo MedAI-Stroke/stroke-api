@@ -1,6 +1,6 @@
 import os
 from tensorflow import keras
-from app.preprocess.audio_processing import preprocess_audio
+from app.preprocessing.audio_processing import preprocess_audio
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
