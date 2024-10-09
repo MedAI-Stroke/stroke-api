@@ -6,7 +6,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 class SpeechModel:
     def __init__(self):
-        self.model = keras.models.load_model(os.path.join(base_dir, 'src', 'speech_model.keras'))
+        self.model = keras.models.load_model(os.path.join(base_dir, 'trained', 'speech_model.keras'))
     
     def predict(self, audio_file):
         audio = preprocess_audio(audio_file)

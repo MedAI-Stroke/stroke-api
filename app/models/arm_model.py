@@ -6,7 +6,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 
 class ArmModel:
     def __init__(self):
-        model_path = os.path.join(base_dir, src, 'arm_model.pkl' )
+        model_path = os.path.join(base_dir, 'trained', 'arm_model.pkl' )
         with open(model_path, 'rb') as file:
             self.model = pickle.load(file)
         
