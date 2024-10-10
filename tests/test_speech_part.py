@@ -3,22 +3,14 @@ import unittest
 import tensorflow as tf
 from app.preprocessing import preprocess_audio
 from app.models import SpeechModel
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-
-# Disable all CUDA devices
-tf.config.set_visible_devices([], 'GPU')
-
+from config import TEST_EXAMPELS_DIR
 
 class TestSpeechModelIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 테스트용 오디오 파일 경로 설정
-        cls.test_audio_dir = os.path.join(os.path.dirname(__file__), 'examples')
-        print(cls.test_audio_dir)
-        cls.positive_audio = os.path.join(cls.test_audio_dir, 'positive_sample_audio.wav')
-        cls.negative_audio = os.path.join(cls.test_audio_dir, 'negative_sample_audio.wav')
+        cls.positive_audio = os.path.join(TEST_EXAMPELS_DIR, 'positive_sample_audio.wav')
+        cls.negative_audio = os.path.join(TEST_EXAMPELS_DIR, 'negative_sample_audio.wav')
         
         # SpeechModel 인스턴스 생성
         cls.speech_model = SpeechModel()

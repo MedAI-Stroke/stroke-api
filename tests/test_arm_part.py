@@ -3,14 +3,14 @@ import unittest
 import pandas as pd
 from app.preprocessing import process_csv
 from app.models import ArmModel
+from config import TEST_EXAMPELS_DIR
 
 class TestArmModelIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Set up test CSV file paths
-        cls.test_csv_dir = os.path.join(os.path.dirname(__file__), 'examples')
-        cls.positive_csv = os.path.join(cls.test_csv_dir, 'positive_sample_arm.csv')
-        cls.negative_csv = os.path.join(cls.test_csv_dir, 'negative_sample_arm.csv')
+        cls.positive_csv = os.path.join(TEST_EXAMPELS_DIR, 'positive_sample_arm.csv')
+        cls.negative_csv = os.path.join(TEST_EXAMPELS_DIR, 'negative_sample_arm.csv')
         
         # Create ArmModel instance
         cls.arm_model = ArmModel()
@@ -49,7 +49,7 @@ class TestArmModelIntegration(unittest.TestCase):
 
     def test_invalid_csv_format(self):
         # Test handling of invalid CSV format
-        invalid_csv = os.path.join(self.test_csv_dir, 'invalid_sample.csv')
+        invalid_csv = os.path.join(TEST_EXAMPELS_DIR, 'invalid_sample.csv')
         with open(invalid_csv, 'w') as f:
             f.write("Invalid,CSV,Format\n1,2,3\n")
         

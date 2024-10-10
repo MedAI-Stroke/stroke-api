@@ -1,8 +1,7 @@
 import os
 import numpy as np
 import librosa
-
-base_dir = os.path.dirname(os.path.abspath(__file__))
+from config import PREPROCESSING_PARAMS_DIR
 
 # from pydub import AudioSegment
 
@@ -36,8 +35,8 @@ def preprocess_audio(audio_file):
 
 
     # Standardization
-    mean = np.load(os.path.join(base_dir, 'parameters', 'audio_mean_train.npy'), allow_pickle=True)
-    std = np.load(os.path.join(base_dir, 'parameters', 'audio_std_train.npy'), allow_pickle=True)
+    mean = np.load(os.path.join(PREPROCESSING_PARAMS_DIR, 'audio_mean_train.npy'), allow_pickle=True)
+    std = np.load(os.path.join(PREPROCESSING_PARAMS_DIR, 'audio_std_train.npy'), allow_pickle=True)
     mfcc = (fixed_mfcc-mean) / (std + 1e-8)
 
     # (20, 236) -> (1, 20, 236)
