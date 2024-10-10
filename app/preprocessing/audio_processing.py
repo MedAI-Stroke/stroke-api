@@ -4,14 +4,6 @@ import numpy as np
 import librosa
 from config import PREPROCESSING_PARAMS_DIR
 
-# from pydub import AudioSegment
-
-# def check_audio_extension(filename):
-#     _, file_extension = os.path.splittext(filename)
-#     if file_extension.lower() != '.wav':
-#         try:
-#             audio = AudioSegment.from_file()
-
 def preprocess_audio(audio_file):
     sr = 16000
     audio_bytes = audio_file.read()

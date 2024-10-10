@@ -70,27 +70,6 @@ def extract_center_segment(df, window_size=100):
     end_idx = min(len(df), mid_idx + window_size // 2)
     return df.iloc[start_idx:end_idx]
 
-
-# 사다리꼴 적분으로 속도와 변위를 구하는 함수
-def integrate(data: list, delta_t: float, var: int):
-    velocity, displacement = [0], [0]
-
-    # 사다리꼴 적분법을 통해 속도와 변위 계산
-    for i in range(1, len(data)):
-        # 속도 계산 (사다리꼴 적분법)
-        v = velocity[-1] + (data[i-1] + data[i]) / 2 * delta_t
-        velocity.append(v)
-
-        # 변위 계산 (사다리꼴 적분법)
-        d = displacement[-1] + (velocity[i-1] + velocity[i]) / 2 * delta_t
-        displacement.append(d)
-
-    var_name = ['AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'][var]
-    to_return = {f'{var_name}_vel': f'{velocity[-1]}', f'{var_name}_loc': f'{displacement[-1]}'}
-
-    return to_return
-
-
 # dictionary를 바탕으로 표준화를 수행하는 함수
 def standardize_new_data(new_df, mean_std_dict):
     for col in new_df.columns:
