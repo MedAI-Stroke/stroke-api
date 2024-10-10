@@ -3,14 +3,14 @@ import unittest
 import tensorflow as tf
 from app.preprocessing import preprocess_audio
 from app.models import SpeechModel
-from config import TEST_EXAMPELS_DIR
+from config import TEST_EXAMPLES_DIR
 
 class TestSpeechModelIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 테스트용 오디오 파일 경로 설정
-        cls.positive_audio = os.path.join(TEST_EXAMPELS_DIR, 'positive_sample_audio.wav')
-        cls.negative_audio = os.path.join(TEST_EXAMPELS_DIR, 'negative_sample_audio.wav')
+        cls.positive_audio = os.path.join(TEST_EXAMPLES_DIR, 'positive_sample_audio.wav')
+        cls.negative_audio = os.path.join(TEST_EXAMPLES_DIR, 'negative_sample_audio.wav')
         
         # SpeechModel 인스턴스 생성
         cls.speech_model = SpeechModel()

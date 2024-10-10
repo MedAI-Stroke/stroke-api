@@ -99,7 +99,7 @@ def standardize_new_data(new_df, mean_std_dict):
             new_df[col] = (new_df[col] - mean) / std
     return new_df
 
-def process_csv(csv_file):
+def preprocess_csv(csv_file):
     df = pd.read_csv(csv_file)
     data_feature, current_data = [], {}
 
