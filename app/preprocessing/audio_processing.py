@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 import numpy as np
 import librosa
 from config import PREPROCESSING_PARAMS_DIR
@@ -13,7 +14,9 @@ from config import PREPROCESSING_PARAMS_DIR
 
 def preprocess_audio(audio_file):
     sr = 16000
-    y, _ = librosa.load(audio_file, sr=sr)
+    audio_bytes = audio_file.read()
+
+    y, _ = librosa.load(BytesIO(audio_bytes), sr=sr)
     y_trimmed, _ = librosa.effects.trim(y, top_db=20)
     y_normalized = y_trimmed/ np.max(np.abs(y_trimmed))
 

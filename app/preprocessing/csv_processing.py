@@ -1,4 +1,5 @@
 import os
+from io import StringIO
 import numpy as np
 import pandas as pd
 from config import PREPROCESSING_PARAMS_DIR
@@ -100,7 +101,9 @@ def standardize_new_data(new_df, mean_std_dict):
     return new_df
 
 def preprocess_csv(csv_file):
-    df = pd.read_csv(csv_file)
+    csv_content = csv_file.stream.read().decode('utf-8')
+
+    df = pd.read_csv(StringIO(csv_content))
     data_feature, current_data = [], {}
 
     # 기본 데이터 정리

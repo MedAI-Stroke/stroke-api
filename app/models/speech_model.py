@@ -9,8 +9,8 @@ class SpeechModel:
     
     def predict(self, audio_file):
         audio = preprocess_audio(audio_file)
-        pred = self.model.predict(audio)
-        pred_cls = (pred > 0.5).astype(int)
+        pred_prob = self.model.predict(audio).flatten()
+        pred_cls = (pred_prob > 0.5).astype(int)
         
-        return {"stroke": pred_cls[0][0],
-                "score":pred[0][0]} 
+        return {"stroke": int(pred_cls[0]),
+                "score": float(pred_prob[0])} 

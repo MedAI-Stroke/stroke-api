@@ -139,8 +139,10 @@ def distances_ratio_with_middle_line(k, landmark_list):
 
 
 def preprocess_image(image_file):
+    image_bytes = image_file.read()
+
     # Convert bytes to numpy array
-    nparr = np.frombuffer(image_file, np.uint8)
+    nparr = np.frombuffer(image_bytes, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)

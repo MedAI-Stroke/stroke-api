@@ -13,9 +13,9 @@ class ArmModel:
     def predict(self, csv_file):
         df = preprocess_csv(csv_file)
         pred_cls = self.model.predict(df)
-        proba = self.model.predict_proba(df)[:,1][0]
+        pred_prob = self.model.predict_proba(df)[:,1][0]
 
-        return {"stroke": pred_cls,
-                "score":proba} 
+        return {"stroke": int(pred_cls),
+                "score": float(pred_prob)} 
 
 

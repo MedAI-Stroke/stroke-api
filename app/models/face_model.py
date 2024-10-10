@@ -14,9 +14,9 @@ class FaceModel:
         fail_prob = probs[0]
         pass_prob = probs[1]
 
-        result = (pass_prob > fail_prob).astype(int)
+        pred_cls = (pass_prob > fail_prob).astype(int)
         
-        return {"stroke": result,
-                'score': pass_prob}
+        return {"stroke": int(pred_cls),
+                'score': float(pass_prob)}
 
     
