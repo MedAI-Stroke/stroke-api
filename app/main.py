@@ -7,7 +7,7 @@ def create_app():
     
     @app.route('/')
     def home():
-        return "Welcoome to MedAI-Stroke API"
+        return "Welcome to MedAI-Stroke API"
 
     app.register_blueprint(api_bp, url_prefix='/api')
 
