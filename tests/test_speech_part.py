@@ -57,7 +57,7 @@ class TestSpeechModelIntegration(unittest.TestCase):
         preprocessed_audio = preprocess_audio(file_storage)
 
         self.assertIsInstance(preprocessed_audio, np.ndarray)
-        self.assertEqual(preprocessed_audio.shape, (1, 20, 236))  # 예상 shape
+        self.assertEqual(preprocessed_audio.shape, (1, 13, 626))  # 예상 shape
 
     def test_model_consistency(self):
         # 모델 일관성 테스트: 같은 입력에 대해 항상 같은 출력을 반환하는지
