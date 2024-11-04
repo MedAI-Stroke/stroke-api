@@ -29,14 +29,12 @@ def extract(data: list, variable):
     # 7. 추세선의 기울기 구하기
     grad = np.polyfit([idx for idx in range(1, len(data) + 1)], data, 1)[0] * 20
 
-    # 8. n밀리초간 평균 변화율의 최댓값 구하기
-    grad_200 = max([abs(data[idx + 4] - data[idx]) / 4 for idx in range(len(data) - 4)])
-    grad_400 = max([abs(data[idx + 8] - data[idx]) / 8 for idx in range(len(data) - 8)])
+    # 8. 1초 간 평균 변화율의 최댓값 구하기
     grad_1000 = max([abs(data[idx + 20] - data[idx]) / 20 for idx in range(len(data) - 20)])
 
     # 계산한 통계치들을 데이터셋으로 만들기
     features = {'mean': mean, 'std': std, 'max': maximum, 'min': minimum, 'mcr': abs_mcr,
-                'peak': num_peak, 'rms': rms, 'grad': grad, 'grad_200': grad_200, 'grad_400': grad_400, 'grad_1000': grad_1000}
+                'peak': num_peak, 'rms': rms, 'grad': grad, 'grad_1000': grad_1000}
 
     # 딕셔너리의 키 앞에 변수의 약어를 붙여 반환하기
     var_name = ['AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'][variable]
@@ -70,6 +68,27 @@ def extract_center_segment(df, window_size=100):
     end_idx = min(len(df), mid_idx + window_size // 2)
     return df.iloc[start_idx:end_idx]
 
+
+# 사다리꼴 적분으로 속도와 변위를 구하는 함수
+def integrate(data: list, delta_t: float, var: int):
+    velocity, displacement = [0], [0]
+
+    # 사다리꼴 적분법을 통해 속도와 변위 계산
+    for i in range(1, len(data)):
+        # 속도 계산 (사다리꼴 적분법)
+        v = velocity[-1] + (data[i-1] + data[i]) / 2 * delta_t
+        velocity.append(v)
+
+        # 변위 계산 (사다리꼴 적분법)
+        d = displacement[-1] + (velocity[i-1] + velocity[i]) / 2 * delta_t
+        displacement.append(d)
+
+    var_name = ['AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ'][var]
+    to_return = {f'{var_name}_vel': f'{velocity[-1]}', f'{var_name}_loc': f'{displacement[-1]}'}
+
+    return to_return
+
+
 # dictionary를 바탕으로 표준화를 수행하는 함수
 def standardize_new_data(new_df, mean_std_dict):
     for col in new_df.columns:
@@ -78,6 +97,9 @@ def standardize_new_data(new_df, mean_std_dict):
             std = mean_std_dict[col]['std']
             new_df[col] = (new_df[col] - mean) / std
     return new_df
+
+
+
 
 def preprocess_csv(csv_file):
     csv_content = csv_file.stream.read().decode('utf-8')
@@ -105,20 +127,29 @@ def preprocess_csv(csv_file):
     df = pd.DataFrame(data_feature)
 
     # 기존 표준화 데이터셋 활용하여 데이터 정규화
-    mean_std_df = pd.read_csv(os.path.join(PREPROCESSING_PARAMS_DIR, 'csv_mean_std_df.csv'), index_col='Unnamed: 0')
-    mean_std_df = mean_std_df.to_dict()
-    df = standardize_new_data(df, mean_std_df)
+    mean_std_df = pd.read_csv(os.path.join(PREPROCESSING_PARAMS_DIR, 'csv_mean_std_df.csv'))
+    mean_std_dict = {}
+    
+    # mean_std_df 구조 변경에 맞춰 dictionary 생성 방식 수정
+    for _, row in mean_std_df.iterrows():
+        mean_std_dict[row['feature']] = {
+            'mean': row['mean'],
+            'std': row['std']
+        }
+    
+    df = standardize_new_data(df, mean_std_dict)
 
-    # 66개 변수 중 54개로 축을 축소하기
+    # 54개 변수 선택 (velocity, location 제외)
     axis = ['AccX', 'AccY', 'AccZ', 'GyrX', 'GyrY', 'GyrZ']
     stats = ['mcr', 'std', 'max', 'min', 'mcr', 'peak', 'rms', 'grad', 'grad_1000']
     variables = [f'{front}_{back}' for front in axis for back in stats]
     df = df[variables]
 
-    # 주성분분석으로 12개 feature로 축소하기
-    components_df = pd.read_csv(os.path.join(PREPROCESSING_PARAMS_DIR, 'csv_PCA_result_11.csv'), index_col=0)
-    pca_loadings = components_df.values
+    # 주성분분석으로 8개 feature로 축소 (이전 11개에서 변경)
+    components_df = pd.read_csv(os.path.join(PREPROCESSING_PARAMS_DIR, 'csv_PCA_result.csv'))
+    pca_loadings = components_df.iloc[:, 1:].values  # 첫 번째 컬럼(Unnamed: 0)은 제외
     pca_transformed = df.values @ pca_loadings.T
-    pca_columns = [f'pca_var_{i}' for i in range(1, 12)]
+    pca_columns = [f'pca_var_{i}' for i in range(1, 9)]  # 8개 컴포넌트로 변경
     df = pd.DataFrame(pca_transformed, columns=pca_columns)
+    
     return df
