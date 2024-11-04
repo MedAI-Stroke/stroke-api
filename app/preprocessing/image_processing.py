@@ -11,6 +11,7 @@ from config import PREPROCESSING_PARAMS_DIR
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(os.path.join(PREPROCESSING_PARAMS_DIR, 'shape_predictor_68_face_landmarks.dat'))
 scaler = joblib.load(os.path.join(PREPROCESSING_PARAMS_DIR, 'face_scaler.pkl'))
+norm = joblib.load(os.path.join(PREPROCESSING_PARAMS_DIR, 'face_norm.pkl'))
 
 def get_landmark_list(landmarks):
     landmark_list = []
@@ -19,7 +20,6 @@ def get_landmark_list(landmarks):
         y = landmarks.part(n).y
         landmark_list.append((x, y))
     return landmark_list
-
 
 def is_frontal_face(landmarks):
     # Left eye, right eye, nose tip
@@ -39,20 +39,6 @@ def is_frontal_face(landmarks):
 
     return ratio
 
-
-def get_k_with_eye(landmark_list):
-    x1, y1 = landmark_list[36]
-    x2, y2 = landmark_list[39]
-    x3, y3 = landmark_list[42]
-    x4, y4 = landmark_list[45]
-
-    x = np.array([x1, x2, x3, x4])
-    y = np.array([y1, y2, y3, y4])
-
-    slope, intercept = np.polyfit(x, y, 1)
-    return slope
-
-
 def get_sym_mouth(landmark_list):
     mouth_land = landmark_list[48:]
     ml = mouth_land
@@ -69,71 +55,26 @@ def get_sym_mouth(landmark_list):
     ]
 
     return sym_mouth
+    
+def distances_ratio_with_eye(landmark_list):
+    sym_mouth = get_sym_mouth(landmark_list)
+    sym_mouth = [sym_mouth[0], sym_mouth[1], sym_mouth[3], sym_mouth[5]]
 
+    left_eye = landmark_list[39]
+    right_eye = landmark_list[42]
+    x1, y1 = left_eye
+    x3, y3 = right_eye
 
-def distances_ratio_with_middle_line(k, landmark_list):
-    try:
-        m = -(1 / k)
+    distances = []
 
-        x1, y1 = landmark_list[36]
-        x2, y2 = landmark_list[39]
-        x3, y3 = landmark_list[42]
-        x4, y4 = landmark_list[45]
-
-        x = np.array([x1, x2, x3, x4])
-        y = np.array([y1, y2, y3, y4])
-
-        xm = np.mean(x)
-        ym = np.mean(y)
-
-        # y-intercept b
-        b = ym - m * xm
-
-        sym_mouth = get_sym_mouth(landmark_list)
-
-        distances = []
-
-        for pa, pb in sym_mouth:
-            x1, y1 = pa
-            x2, y2 = pb
-
-            distance_a = abs(m * x1 - y1 + b) / np.sqrt(m ** 2 + 1)
-            distance_b = abs(m * x2 - y2 + b) / np.sqrt(m ** 2 + 1)
-            distance = distance_a / distance_b
-            distance = max(distance, 1 / distance)
-
-            distances.append(distance)
-
-    except ZeroDivisionError:
-        m = 0
-
-        x1, y1 = landmark_list[36]
-        x2, y2 = landmark_list[39]
-        x3, y3 = landmark_list[42]
-        x4, y4 = landmark_list[45]
-
-        x = np.array([x1, x2, x3, x4])
-        y = np.array([y1, y2, y3, y4])
-
-        xm = np.mean(x)
-        ym = np.mean(y)
-
-        b = ym - m * xm
-
-        sym_mouth = get_sym_mouth(landmark_list)
-
-        distances = []
-
-        for pa, pb in sym_mouth:
-            x1, y1 = pa
-            x2, y2 = pb
-
-            distance_a = abs(m * x1 - y1 + b) / np.sqrt(m ** 2 + 1)
-            distance_b = abs(m * x2 - y2 + b) / np.sqrt(m ** 2 + 1)
-            distance = distance_a / distance_b
-            distance = max(distance, 1 / distance)
-
-            distances.append(distance)
+    for left_mouth, right_mouth in sym_mouth:
+        x2, y2 = left_mouth
+        x4, y4 = right_mouth
+        left_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        right_distance = math.sqrt((x4 - x3)**2 + (y4 - y3)**2)
+        distance = left_distance / right_distance
+        distance = max(distance, 1/distance)
+        distances.append(distance)
 
     return distances
 
@@ -160,14 +101,13 @@ def preprocess_image(image_file):
 
     # Get landmarks and calculate distances
     landmark_list = get_landmark_list(landmarks)
-    k = get_k_with_eye(landmark_list)
-    distances = distances_ratio_with_middle_line(k, landmark_list)
+    distances = distances_ratio_with_eye(landmark_list)
 
     # Convert to numpy array and reshape
     face_data_array = np.array(distances).reshape(1, -1)
 
     # Scale the data
     face_data_scaled = scaler.transform(face_data_array)
-
+    face_data_scaled = norm.transform(face_data_scaled)
 
     return face_data_scaled
