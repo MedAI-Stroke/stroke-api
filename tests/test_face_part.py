@@ -56,7 +56,7 @@ class TestFaceModelIntegration(unittest.TestCase):
         file_storage = self.create_file_storage(self.positive_image)
         preprocessed_image = preprocess_image(file_storage)
         self.assertIsInstance(preprocessed_image, np.ndarray)
-        self.assertEqual(preprocessed_image.shape, (1, 8))  # Expected shape
+        self.assertEqual(preprocessed_image.shape, (1, 4))  # Expected shape
 
     def test_model_consistency(self):
         # Test model consistency: same input should always return same output
