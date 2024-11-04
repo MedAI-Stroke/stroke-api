@@ -54,7 +54,7 @@ class TestArmModelIntegration(unittest.TestCase):
         file_storage = self.create_file_storage(self.positive_csv)
         processed_data = preprocess_csv(file_storage)
         self.assertIsInstance(processed_data, pd.DataFrame)
-        self.assertEqual(processed_data.shape[1], 11)  # Expected: 11 PCA components
+        self.assertEqual(processed_data.shape[1], 8)  # Expected: 8 PCA components
 
     def test_model_consistency(self):
         # Test model consistency: same input should always return the same output

@@ -1,0 +1,4 @@
+n_components,cumulative_evr,train_auroc,test_auroc,train_accuracy,test_accuracy,train_recall,test_recall,train_precision,test_precision,best_params
+8,0.7408119342706763,0.9900299102691925,0.9155555555555556,0.9451476793248945,0.9,0.940677966101695,0.8666666666666667,0.9487179487179487,0.9285714285714286,"{'max_depth': 7, 'min_samples_leaf': 5, 'min_samples_split': 10, 'n_estimators': 50}"
+O
+A
